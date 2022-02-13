@@ -15,7 +15,10 @@ app.secret_key = 'mysecretkey'
 
 @app.route('/') #ruta inicial
 def Index():
-  return render_template('index.html') #si un user visita el route inicial se encontrará con este msj
+  cur = mysql.connection.cursor()
+  cur.execute('SELECT * FROM contacts')
+  data = cur.fetchall() #visualizar los datos
+  return render_template('index.html', contacts = data) #si un user visita el route inicial se encontrará con este msj
 
 @app.route('/add_contact', methods=['POST']) #ruta para agregar contacto
 def add_contact():
@@ -29,13 +32,20 @@ def add_contact():
     flash('Contact Added Successfully')
     return redirect(url_for('Index'))
 
-@app.route('/edit') #ruta para editar contacto
-def edit_contact():
-  return 'Edit contact'
+@app.route('/edit/<id_contacts>') #ruta para editar contacto
+def get_contact(id_contacts):
+  cur = mysql.connection.cursor()
+  cur.execute('SELECT * FROM contacts WHERE id_contacts = %s', (id_contacts))
+  data = cur.fetchall()
 
-@app.route('/delete') #ruta para eliminar contacto
-def delete_contact():
-  return 'Delete contact'
+@app.route('/delete/<string:id_contacts>') #ruta para eliminar contacto
+def delete_contact(id_contacts):
+  cur = mysql.connection.cursor()
+  cur.execute('DELETE FROM contacts WHERE id_contacts = {0}'.format(id_contacts))
+  mysql.connection.commit()
+  flash('Contact Removed Successfully')
+  return redirect(url_for('Index'))
+
 
 if __name__ == '__main__':
   app.run(port = 3000, debug = True)
