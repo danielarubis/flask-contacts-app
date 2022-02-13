@@ -37,6 +37,25 @@ def get_contact(id_contacts):
   cur = mysql.connection.cursor()
   cur.execute('SELECT * FROM contacts WHERE id_contacts = %s', (id_contacts))
   data = cur.fetchall()
+  return render_template('edit-contact.html', contact = data[0])
+
+@app.route('/update/<id_contacts>', methods=['POST'])
+def update_contacts(id_contacts):
+  if request.method == 'POST':
+    fullname = request.form['fullname']
+    phone = request.form['phone']
+    email = request.form['email']
+    cur = mysql.connection.cursor()
+    cur.execute("""
+      UPDATE contacts
+      SET fullname = %s,
+          phone = %s,
+          email = %s
+      WHERE id_contacts = %s
+    """, (fullname, phone, email, id_contacts))
+    mysql.connection.commit()
+    flash('Contact Updated Successfully')
+    return redirect(url_for('Index'))
 
 @app.route('/delete/<string:id_contacts>') #ruta para eliminar contacto
 def delete_contact(id_contacts):
