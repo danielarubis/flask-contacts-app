@@ -1,3 +1,11 @@
+{% with messages = get_flashed_messages()%} <!-- Obtener el mensaje del servidor -->
+{% if messages %} <!-- Si existe mensaje-->
+{% for message in messages %} <!-- Recorrer mensaje -->
+<p>{{message}}</p>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
 <form action="/add_contact" method="POST">
     <input type="text" name="fullname" placeholder="Fullname">
     <input type="text" name="phone" placeholder="Phone">
